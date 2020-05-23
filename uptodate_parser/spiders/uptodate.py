@@ -126,14 +126,14 @@ class UptodateSpider(scrapy.Spider):
                 time.sleep(1)
 
     def save(self, response):
-        self.driver.get(response.request.url)
-        wait = WebDriverWait(self.driver, 100)
-        # self.save_parsed_js(response.xpath('//script'))
-        # self.save_parsed_css(response.xpath('//link'))
-        # self.save_parsed_images(response.xpath('//img'))
+        # self.driver.get(response.request.url)
+        # wait = WebDriverWait(self.driver, 100)
+        self.save_parsed_js(response.xpath('//script'))
+        self.save_parsed_css(response.xpath('//link'))
+        self.save_parsed_images(response.xpath('//img'))
         filename = self.filename(response.url)
         path = os.path.join(BASE_DIR, f'../templates/{filename}.html')
-        content = response.selector.xpath('//div[@id="topicContent"]').get()
+        # content = response.selector.xpath('//div[@id="topicContent"]').get()
         with open(path, 'wb') as f:
             # f.write(self.html_snippet.format(content=content))
             f.write(response.body)
@@ -191,5 +191,9 @@ class UptodateSpider(scrapy.Spider):
             'adults-with-diabetes-mellitus'
         ]
         for url in start_urls:
-            yield SeleniumRequest(url=url, callback=self.save)
+            yield SeleniumRequest(
+                url=url, wait_time=100,
+                wait_until=EC.presence_of_element_located((By.TAG_NAME, "body")),
+                callback=self.save
+            )
         yield None
