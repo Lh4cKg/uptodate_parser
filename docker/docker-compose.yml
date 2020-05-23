@@ -1,0 +1,23 @@
+version: '3.7'
+
+services:
+  parser:
+    image: uptodate_parser:latest
+    container_name: "parser"
+    restart: always
+    expose:
+      - 6800
+    ports:
+      - "6800:6800"
+    networks:
+      - shared_net
+    volumes:
+      - parser_data:/app/uptodate_parser/data
+    command: bash -c "scrapy crawl uptodate"
+
+networks:
+  shared_net:
+
+volumes:
+  parser_data:
+    driver: local
